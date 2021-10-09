@@ -1,0 +1,17 @@
+.cats-images {
+  display: flex;
+  flex-wrap: wrap;
+  &-image-container {
+    display: flex;
+    margin: 10px;
+    flex: 1 0 33%;
+  }
+  img {
+    display: flex;
+    max-width: 1000px;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: center;
+  }
+}
