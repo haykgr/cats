@@ -1,8 +1,9 @@
-import { SyntheticEvent } from "hoist-non-react-statics/node_modules/@types/react";
+import { SyntheticEvent } from "react";
 import { setPage, setSelectedCategory } from "../../app/actions";
 import { AppDispatch } from "../../app/store";
 import { ICategory } from "../../types/types";
 import "./header.scss";
+import NavbarButtons from "./NavbarButtons";
 
 interface IProps {
   categories: ICategory[];
@@ -18,16 +19,10 @@ const Header = ({ categories, dispatch }: IProps) => {
 
   return (
     <nav className="header-nav">
-      {categories.map((category: ICategory) => (
-        <button
-          key={category.id}
-          data-key={category.id}
-          className="header-nav-item"
-          onClick={handleCategoryClick}
-        >
-          {category.name}
-        </button>
-      ))}
+      <NavbarButtons
+        categories={categories}
+        handleCategoryClick={handleCategoryClick}
+      />
     </nav>
   );
 };

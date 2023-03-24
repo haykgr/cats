@@ -2,13 +2,13 @@ import { lazy, Suspense } from "react";
 import { ICat } from "../../types/types";
 import "./content.scss";
 
+const Image = lazy(() => import("../../shared/Image"));
+
 interface IProps {
   cats: ICat[];
 }
 
 const Content = ({ cats }: IProps) => {
-  const Image = lazy(() => import("../Image/Image"));
-
   return (
     <div className="cats-images">
       {cats.map((cat: ICat) => (

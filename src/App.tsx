@@ -1,47 +1,43 @@
 import { useEffect, lazy, Suspense } from "react";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Route, BrowserRouter as Router } from "react-router-dom";
 import { resetCats, setCategories, setCats, setPage } from "./app/actions";
 import { LIMIT } from "./app/constants";
-import { AppDispatch } from "./app/store";
+import { RootState } from "./app/store";
 import { fetchCategories } from "./services/categoryService";
 import { fetchCats } from "./services/catsService";
-import { ICategory, ICat } from "./types/types";
 import history from "./app/history";
 
-interface IApp {
-  categories: ICategory[];
-  cats: ICat[];
-  page: number;
-  selectedCategory?: number;
-  dispatch: AppDispatch;
-}
+const Content = lazy(() => import("./components/Content"));
+const Header = lazy(() => import("./components/Header"));
+const Footer = lazy(() => import("./components/Footer"));
 
-function App({ categories, cats, page, selectedCategory, dispatch }: IApp) {
-  const Content = lazy(() => import("./components/Content/Content"));
-  const Header = lazy(() => import("./components/Header/Header"));
-  const Footer = lazy(() => import("./components/Footer/Footer"));
-
-  const handleLoadMoreClick = () => {
-    dispatch(setPage(page + 1));
-  };
+function App() {
+  const dispatch = useDispatch();
+  const { categories, cats, selectedCategory, page } = useSelector(
+    (state: RootState) => state
+  );
 
   useEffect(() => {
-    fetchCategories().then((response: ICategory[]) => {
+    (async function () {
+      const response = await fetchCategories();
       dispatch(setCategories(response));
-    });
+    })();
   }, [dispatch]);
 
   useEffect(() => {
-    fetchCats(LIMIT, page, selectedCategory).then((response: ICat[]) => {
+    (async function () {
+      const response = await fetchCats(LIMIT, page, selectedCategory);
       history.push(
         `/search?limit=${LIMIT}${
           !!selectedCategory ? `&category_ids=${selectedCategory}` : ""
         }${!!page ? `&pages=${page}` : ""}`
       );
       dispatch(page > 0 ? setCats(response) : resetCats(response));
-    });
+    })();
   }, [selectedCategory, page, dispatch]);
+
+  const handleLoadMoreClick = () => dispatch(setPage(page + 1));
 
   return (
     <div className="App">
@@ -59,11 +55,4 @@ function App({ categories, cats, page, selectedCategory, dispatch }: IApp) {
   );
 }
 
-const mapStateToProps = (state: any, ownProps: any) => {
-  return {
-    ...ownProps,
-    ...state,
-  };
-};
-
-export default connect(mapStateToProps)(App);
+export default App;
